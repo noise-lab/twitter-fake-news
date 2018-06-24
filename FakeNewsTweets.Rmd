@@ -1,0 +1,45 @@
+---
+title: "Fake News Tweet Lab"
+author: "Nick Feamster"
+date: "6/24/2018"
+output: html_notebook
+---
+
+# install.packages("rtweet")
+# install.packages("readr")
+
+Install the libraries above, and then load the Rtweet library, which we will use to collect Twitter Data.
+
+```{r}
+library(rtweet)
+```
+
+Get trending topics for a region, such as Cape Town.
+
+```{r}
+ct <- get_trends("cape town")
+```
+
+Find a trend that appears to be related to news, download some of the Tweets, and extract the URLs for those Tweets. 
+
+```{r}
+rt_rm <- search_tweets("Ramaphosa", n=18000, include_rts = FALSE)
+rt_rm_urls <- subset(rt_rm, select = c(19))
+rt_rm_urls <- na.omit(rt_rm_urls)
+```
+
+Write the entire data frame to a JSON file.
+
+```{r}
+write_json(rt_rm, path = "tweets.json")
+```
+
+
+Write the URLs only to a CSV, which you can use to post-process the URLs/domain names further, either in R or Python/SciKitLearn.
+
+```{r}
+rt_rm_url_string <- apply(rt_rm_urls,2,as.character)
+write.csv(rt_rm_url_string, file = "tweet_urls.csv")
+```
+
+
